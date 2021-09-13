@@ -78,16 +78,25 @@ theorem c₄ (hm : m) (hn : n) : n ∧ m :=
 -- axioms can be used within theorems as a way of postulating the existence of an element of a given type
 theorem t1 (hm : m) (hn : n) : m := hm
 
-variable (ni : n)
-def ax (p : Prop) (t : Type) (t₁ : t) : p → t := λ x : p => t₁
-#check ax n Bool true ni 
-def truth : Prop := 1=1
-#eval ax truth Bool true 
 
-axiom hn (b : Prop) : b
-#check hn
-theorem t : (m → ∃ (n : Prop), n) := t1 hn
+-- ...
+-- ...
+-- TODO: finish filling in the rest of the declarations, namespaces, and dependant type theory info above
 
+
+-- 2. Theorem Proving
+
+-- 2.1 Axioms, Propositions, and Proofs (https://leanprover.github.io/theorem_proving_in_lean4/propositions_and_proofs.html)
+-- Prop:
+-- 'Prop' is a type that represents propositions
+#check Prop
+-- constructors can be used to contruct new propositions from others:
+#check And -- 'Prop → Prop → Prop' ie. a function on 'Prop' that yeilds a new 'Prop'
+#check Or
+#check Not
+#check implies
+-- 'axiom': for each element 'p : Prop', there exists another type 'Proof p', for the type of proofs of 'p'; 'axiom' is a constant of such a type
+#check Prop
 
 
 
@@ -103,7 +112,7 @@ end test
 
 
 -- tactics
-theorem t1 : q ∨ p → p ∨ q := by
+theorem tactic_ex : q ∨ p → p ∨ q := by
   intro h
   cases h with
   | inl h_left =>
