@@ -1,1 +1,3 @@
--- lean package for working with axiomatic formal systems in the lean theorem prover
+import A
+def main : IO Unit :=
+  IO.println "Hello, world!"

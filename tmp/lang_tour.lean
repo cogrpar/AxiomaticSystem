@@ -1,5 +1,7 @@
 -- LEAN language tour
 
+import MissingComponents
+
 -- 1. Basic Usage
 
 -- 1.1 Expressions (https://leanprover.github.io/lean4/doc/expressions.html):
@@ -54,13 +56,12 @@ end projection_ex
 
 -- 1.2 Declarations (https://leanprover.github.io/lean4/doc/declarations.html)
 -- axioms:
--- for each 'p : Prop' there is a type 'Proof p'.  Axioms are constants of this type
-variable (Proof : Prop → Type)
 -- 'axiom c : α': declares a constant named 'c' of type 'α', it is postulating that 'α' is not an empty type
 variable (α : Type)
 axiom c₁ : α 
 #check c₁
 axiom c₂ (p q : Nat) : p = q
+#check c₂
 #check c₂ 2 2 -- type is '2 = 2' which is an instance of the Prop type
 
 -- definitions:
@@ -95,9 +96,13 @@ theorem t1 (hm : m) (hn : n) : m := hm
 #check Or
 #check Not
 #check implies
--- 'axiom': for each element 'p : Prop', there exists another type 'Proof p', for the type of proofs of 'p'; 'axiom' is a constant of such a type
-#check Prop
-
+def Implies (α : Prop) (β : Prop) : Prop := -- define Implies equal to implies
+  α → β 
+#check Implies
+-- 'axiom': for each element 'p : Prop', there exists another type 'Proof p', for the type of proofs of 'p' '
+#check Proof
+-- 'axiom' is a constant of such a type
+axiom 
 
 
 namespace test
