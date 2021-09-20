@@ -1,7 +1,5 @@
 -- LEAN language tour
 
-import MissingComponents
-
 -- 1. Basic Usage
 
 -- 1.1 Expressions (https://leanprover.github.io/lean4/doc/expressions.html):
@@ -77,8 +75,11 @@ theorem c₄ (hm : m) (hn : n) : n ∧ m :=
 #check c₄
 #check c₄ (true) (f)
 -- axioms can be used within theorems as a way of postulating the existence of an element of a given type
-theorem t1 (hm : m) (hn : n) : m := hm
-
+axiom c₅ (num : Nat) : ∃ (num₁ : Nat), num = num₁
+#check c₅
+theorem uses_ax (num : Nat) : ∃ (num₁ : Nat), num = num₁ :=
+  c₅ num
+#check uses_ax
 
 -- ...
 -- ...
@@ -99,11 +100,6 @@ theorem t1 (hm : m) (hn : n) : m := hm
 def Implies (α : Prop) (β : Prop) : Prop := -- define Implies equal to implies
   α → β 
 #check Implies
--- 'axiom': for each element 'p : Prop', there exists another type 'Proof p', for the type of proofs of 'p' '
-#check Proof
--- 'axiom' is a constant of such a type
-axiom 
-
 
 namespace test
   variable (a b c : String)
