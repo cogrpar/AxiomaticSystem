@@ -108,7 +108,15 @@ end declarations
 
 -- 1.3 Inductive Types (https://leanprover.github.io/lean4/doc/declarations.html#inductive-types)
 namespace inductive_types
-
+  -- context and telescopes:
+  -- the environment in lean represents the the current state at the time of a line being parsed, including any previous declarations
+  -- the local context is a list of variables that is held constant while an expression is being elaborated: '(a₁ : α₁), (a₂ : α₂), ... (aₙ : αₙ)' 
+  -- where each 'aᵢ' is a local constant and each 'αᵢ' is an expression of type 'Sort u' such that the universe level can be made up of elements of the enviroment, so long as the element in question has already been declared
+  -- consider the following expression:
+  def ex₁ (a b : Nat) : Nat → Nat := fun c => a + (b + c)
+  -- the expression 'fun ex₁ => a + (b + c)' is elaborated in the context '(a : Nat), (b : Nat)'
+  -- the expression 'a + (b + c)' is elaborated in the context '(a : Nat), (b : Nat), (c : Nat)'
+  -- the context is sometimes refered to as telescopes
 end inductive_types
 
 -- ...
