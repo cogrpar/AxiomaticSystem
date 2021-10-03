@@ -116,7 +116,18 @@ namespace inductive_types
   def ex₁ (a b : Nat) : Nat → Nat := fun c => a + (b + c)
   -- the expression 'fun ex₁ => a + (b + c)' is elaborated in the context '(a : Nat), (b : Nat)'
   -- the expression 'a + (b + c)' is elaborated in the context '(a : Nat), (b : Nat), (c : Nat)'
-  -- the context is sometimes refered to as telescopes
+  -- the context is sometimes refered to as telescope
+  -- more generally, a telescope is a list of declarations declared relative to a given context
+  universe u
+  def ex₂ (a₁ : Sort u) (a₂ : Sort u) (a₃ : Sort u) /- ... -/ (aₙ : Sort u) (x : aₙ) : aₙ := -- context is '(a₁ : Sort u) (a₂ : Sort u) (a₃ : Sort u) ... (aₙ : Sort u), (x : aₙ)'
+    let b₁ (x : a₁) : a₁ := x -- the following lines demonstrate telescope '(b₁ : a₁ → a₁) (b₂ : a₂ → a₂) (b₃ : a₃ → a₃) ... (bₙ : aₙ → aₙ)' relative to the context
+    let b₂ (x : a₂) : a₂ := x -- note that the types of each 'bₙ' in the telescope can depend on members of the context, 'aₙ'
+    let b₃ (x : a₃) : a₃ := x -- generalizing this idea, the context itself can be viewed as a telescope relative to an empty context
+    /- ... -/
+    let bₙ (x : aₙ) : aₙ := x
+    bₙ x
+  -- telescopes are often used to describe a list of arguments, or parameters, to a declaration
+  -- in such cases, it is often notationally convenient to let '(a : α)' stand for a telescope rather than just a single argument
 end inductive_types
 
 -- ...
