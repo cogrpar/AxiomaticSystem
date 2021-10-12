@@ -51,6 +51,45 @@ namespace expressions
   #check projection_ex.e
   -- 'lit': a natural number or string literal
   -- 'mdata k s': the expression 's' decorated with metadata 'k'
+
+  -- basic data types and assertions:
+  -- numbers (Nat):
+  def num : Nat := 5
+  #check num
+  #check 5
+  -- booleans (Bool):
+  def boolean (a : Bool) (b : Bool) : Bool :=
+    a || b
+  #check boolean
+  #check boolean true false
+  #check false
+  -- pairs:
+  def pair (a : Nat) (b : Bool) : Nat × Bool :=
+    (a, b)
+  #check pair
+  #check pair 5 true
+  #check (1, 2)
+  -- lists:
+  /- 'open list' not working currently
+  open list
+  def list₁ : list Nat := [1, 2, 3] 
+  #check list₁
+  #check (1 :: list₁) -- get index of list
+  -/
+  -- sets:
+  /- set curly bracket notation not working currently
+  def set₁ : set Nat :=
+    {1, 2, 3}
+  def set₂ : set Nat :=
+    {x | x < 7} ∪ set₁
+  #check set₁
+  #check set₂
+  -/
+  -- strings and characters:
+  #check "hello world"
+  #check 'a'
+  -- assertions:
+  #check ∀ a b c n : Nat, a ≠ 0 ∧ b ≠ 0 ∧ c ≠ 0 ∧ n > 2 → a^n + b^n ≠ c^n
 end expressions
 
 
@@ -147,11 +186,14 @@ namespace inductive_types
   #check foo.constructor₁
   -- the eliminator 'foo.rec' which is a function that maps foo to a type; it takes the following arguments
   -- '(a: α)': the parameters
-  -- '{C : foo a → Type u}': the motive of the elimination (the curly braces show that the type of this expression is left to lean to determine, ie. left)
+  -- '{C : foo a → Type u}': the motive of the elimination (the curly braces show that the 'Type u' of this expression is left to lean to determine, ie. left)
   -- '(x : foo a)': the major premise (where the major premise is a statement of a general or universal nature)
-  -- for each 'i', the minor premise corresponding to 'constructorᵢ' (where the minor premise is a statement regarding a particular case, related to the subject of the major premise)
+  -- for each 'i', the minor premise corresponding to 'constructorᵢ' (where the minor premise is a statement regarding a particular case, related to the subject of the major premise), and returns an element of 'C (constructorᵢ a b)'
+  -- returns an element of 'C x'
   #check foo.rec
-  
+  -- the eliminator represents a principle of recursion
+  -- to find an element of 'C x' where 'x : foo a' (ie. to define a function on foo), it suffices to show that 'C' applies for cases where 'x' is of the form 'constructorᵢ a b' 
+  -- in the case where some of the arguments to 'constructorᵢ' are recursive, we can assume that we have already constructed values of 'C y' for each value 'y' constructed at an earlier stage
   inductive natural_numbers : Type
     | zero : natural_numbers -- nonrecusrive
     | succ : natural_numbers → natural_numbers -- recursive
@@ -160,7 +202,7 @@ end inductive_types
 
 -- ...
 -- ...
--- TODO: finish filling in the rest of the inductive types, namespaces, and dependant type theory info above
+-- TODO: finish filling in the rest of the inductive types, namespaces, and dependant type theory, and declaring new types above
 
 
 -- 2. Theorem Proving
