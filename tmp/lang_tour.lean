@@ -207,10 +207,68 @@ namespace inductive_types
   #check boolean.rec -- function representing induction 
 end inductive_types
 
--- ...
--- ...
--- TODO: finish filling in the rest of namespaces, dependant type theory, and declaring new types above
+-- 1.4 Sections (https://leanprover.github.io/lean4/doc/sections.html)
+namespace sections
+  -- the 'variable' command can be used to declare objects of any type
+  variable (new_variable : Type) -- declares variable called 'new_variable' which stays in scope until the end of the file (or the namespace in this instance)
+  #check new_variable
+  -- a way to limit the scope of a variable is to use the 'section' command
+  section example_section
+    variable (section_variable : Type) -- declares new variable limited to the 'example_section' section
+    #check section_variable
+  end example_section
+  -- if one attempts to run '#check section_variable' outide of the section, lean will throw an error
+end sections
 
+-- 1.5 Namespaces (https://leanprover.github.io/lean4/doc/namespaces.html)
+namespace namespaces
+  -- namespaces can be used to group declarations into hierarchical structures
+  namespace example_namespace
+    def a : Nat := 5
+    def f (x : Nat) : Nat := x + 7
+
+    def fa : Nat := f a
+    def ffa : Nat := f (f a)
+
+    #check a
+    #check f
+    #check fa
+    #check ffa
+    #check example_namespace.fa
+
+    -- namespaces can be nested
+    namespace nested
+      def b : Nat := 5
+      #check b -- variables declared in the namespace can be referenced as normal within the namespace
+    end nested
+    #check nested.b -- to be referenced outside of that namespace, they must be referenced as a projection of the namespace field
+  end example_namespace
+  #check example_namespace.a
+  #check example_namespace.nested.b -- referenced using full name outside of namespace
+
+  -- namespaces that have been closed can later be reopened
+  namespace example_namespace
+    #check a
+    def c : Nat := 12
+  end example_namespace
+
+  -- the 'open' command can be used to open the contents of a namespace to the current scope
+  open example_namespace
+  open nested
+  #print a
+  #print b
+  #print c -- variables can now be referenced as if the commands are run from within the namespaces
+end namespaces
+
+-- 1.6 Implicit Arguments (https://leanprover.github.io/lean4/doc/implicit.html)
+namespace implicit_arguments
+
+end implicit_arguments
+
+-- 1.7 Declaring New Types
+namespace declaring_new_types
+
+end declaring_new_types
 
 -- 2. Theorem Proving
 
@@ -230,16 +288,6 @@ namespace propositions_and_proofs
 
 end propositions_and_proofs
 
-namespace test
-  variable (a b c : String)
-  def d := "test"
-
-  -- axiom
-  axiom f : ∃ (x : Bool), ∃ (y : Bool), (x ∧ y)
-end test
-
-#check test.f
-
 
 -- tactics
 theorem tactic_ex : q ∨ p → p ∨ q := by
@@ -253,7 +301,7 @@ theorem tactic_ex : q ∨ p → p ∨ q := by
     assumption
   
 
-def main : IO Unit :=
+def main : IO Unit := -- main function, entry point of the program
   let str := "hello world from lean!"
   --IO.println "hello world from lean!"
   IO.println str
