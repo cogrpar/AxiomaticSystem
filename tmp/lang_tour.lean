@@ -27,7 +27,7 @@ namespace expressions
   -- 'c': identifier denoting a declared constant or a defined object
   -- 'x': variable in the local context in which the expression is interpreted
   -- '?m': metavariable in the metavariable context in which the expression is interpreted (ie. a "hole" that still needs to be synthesized)
-  -- '(x : α) → β': a function on 'x' of type 'α' to type 'β'
+  -- '(x : α) → β': a function on 'x' of type 'α' mapping it to 'β', where 'β' is of type 'Sort'
   -- 's t':  the result of applying 's' to 't', where 's' and 't' are expressions
   variable (α β : Sort u)
   variable (s : (x : α) → β)
@@ -192,17 +192,24 @@ namespace inductive_types
   -- returns an element of 'C x'
   #check foo.rec
   -- the eliminator represents a principle of recursion
-  -- to find an element of 'C x' where 'x : foo a' (ie. to define a function on foo), it suffices to show that 'C' applies for cases where 'x' is of the form 'constructorᵢ a b' 
+  -- to find an element of 'C x' where 'x : foo a' (ie. to map foo to a type), it suffices to show that 'C' applies for cases where 'x' is of the form 'constructorᵢ a b' 
   -- in the case where some of the arguments to 'constructorᵢ' are recursive, we can assume that we have already constructed values of 'C y' for each value 'y' constructed at an earlier stage
   inductive natural_numbers : Type
     | zero : natural_numbers -- nonrecusrive
-    | succ : natural_numbers → natural_numbers -- recursive
-  #check natural_numbers.rec
+    | succ : (prev : natural_numbers) → natural_numbers -- recursive
+  #check natural_numbers.rec -- function represents recursion because the motive of elimination applied to recursive constructors assumes that the motive of elimination has already been applied to the recursive arguments
+  -- when 'C x' is of type 'Prop' (ie. when the eliminator maps foo to a proposition), 'foo.rec' represents induction
+  -- in order to show '∀ x, C x', it suffices to show that 'C' applies for each constructor, so long as it is assumed that 'C' holds for the recursive inputs for said constructor (ie. the inductive hypothesis)
+  inductive boolean : Prop
+    | t : boolean -- nonrecursive
+    | f : boolean
+    | not : (input : boolean) → boolean -- recursive
+  #check boolean.rec -- function representing induction 
 end inductive_types
 
 -- ...
 -- ...
--- TODO: finish filling in the rest of the inductive types, namespaces, and dependant type theory, and declaring new types above
+-- TODO: finish filling in the rest of namespaces, dependant type theory, and declaring new types above
 
 
 -- 2. Theorem Proving
