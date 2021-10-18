@@ -1,4 +1,14 @@
 -- LEAN language tour
+/- 
+The lean4 docs (https://leanprover.github.io/lean4/doc/) are 
+a great resource for learning the language, but they can be 
+dificult to work through, overcomplicated at times, and not yet
+complete.  For that reason, I have included this file that I 
+wrote as I worked through the docs, which I hope provides enough 
+information to get started with the language.  It is by no means
+a complete tour, but it should be sufficient to help one get 
+familiar with the basics lean4.
+-/
 
 -- 1. Basic Usage
 
@@ -186,7 +196,7 @@ namespace inductive_types
   #check foo.constructor₁
   -- the eliminator 'foo.rec' which is a function that maps foo to a type; it takes the following arguments
   -- '(a: α)': the parameters
-  -- '{C : foo a → Type u}': the motive of the elimination (the curly braces show that the 'Type u' of this expression is left to lean to determine, ie. left)
+  -- '{C : foo a → Type u}': the motive of the elimination (the curly braces show that the 'Type u' of this expression is left to lean to determine, ie. left implicit)
   -- '(x : foo a)': the major premise (where the major premise is a statement of a general or universal nature)
   -- for each 'i', the minor premise corresponding to 'constructorᵢ' (where the minor premise is a statement regarding a particular case, related to the subject of the major premise), and returns an element of 'C (constructorᵢ a b)'
   -- returns an element of 'C x'
@@ -262,12 +272,84 @@ end namespaces
 
 -- 1.6 Implicit Arguments (https://leanprover.github.io/lean4/doc/implicit.html)
 namespace implicit_arguments
+  -- when objects are declared in lean (using def, theorem, axiom, constant, inductive, or structure), they can be declared implicitly or explicitly
+  -- implicit arguments' types are inferred by lean behind the scenes
+  -- explicit arguments' types are specified by the user
+  -- '(x : α)': an explicit argument of type 'α'
+  -- '{x : α}': an implicit argument, eagerly inserted (eagerly meaning that the expression is interpreted as soon as it is assigned to a variable)
+  -- '⦃x : α⦄': or {{x : α}} : an implicit argument, weakly inserted (weakly meaning that the expression isn't interpreted as soon as it is assigned to a variable)
+  -- '[x : α]': an implicit argument that should be inferred by type class resolution
+  -- '(x : α := v)': an optional argument, with default value 'v'
+  -- '(x : α := by tac)': an implicit argument, to be synthesized by tactic 'tac'
 
+  -- example of a function defined with explicit arguments
+  def compose (α β γ : Type) (g : β → γ) (f : α → β) (x : α) : γ :=
+    g (f x)
+  #check compose
+  -- when a function has an explicit argument, you can nonetheless ask lean's elaborator to infer the argument automatically
+  -- this is done by entering it as an underscore '_'
+  #check compose _ _ _ -- notice that the inferred types become holes for lean to fill
+  def double (x : Nat) := 2*x
+  def triple (x : Nat) := 3*x
+  #check compose _ _ _ double triple _ -- infers 'Nat'
+  
+  -- conversely, writing '@foo' indicates that all of the arguments to be 'foo' are to be given explicitly, independent of how foo was declared
+  -- take the following implicit definition for example:
+  def compose₂ {α β γ : Type} (g : β → γ) (f : α → β) (x : α) : γ :=
+    g (f x)
+  #check compose₂ -- implicitly defined
+  #check @compose₂ -- explicitly defined
+
+  -- variables can also be specified as implicit when they are declared with the 'variable' command
+  variable (x : α) -- normal declaration of 'x' explicitly defined as type 'α'
+  #check x 
+  universe u
+  variable {imp_x : Type u} -- implicit declaration of 'x'
+  #check imp_x
+  variable (instance_of_imp_x : imp_x)
+  def ident := instance_of_imp_x
+  #check instance_of_imp_x
+  #check ident 
+  #check ident 5
 end implicit_arguments
 
--- 1.7 Declaring New Types
+-- 1.7 Declaring New Types (https://leanprover.github.io/lean4/doc/decltypes.html)
 namespace declaring_new_types
+  -- practically every type in lean can be thought of as an inductive type
+  -- intuitively, for every inductive type 'foo', each constructor specifies a way of building new objects of type 'foo'
+  -- the type 'foo' consists of nothing more than the objects that are constructed in this way
 
+  -- the simplest kind of inductive type is simply a type with a finite, enumerated list of elements
+  -- for example, here is an example declaring an enumerated type 'Weekday':
+  inductive Weekday where
+    | sunday    : Weekday
+    | monday    : Weekday
+    | tuesday   : Weekday
+    | wednesday : Weekday
+    | thursday  : Weekday
+    | friday    : Weekday
+    | saturday  : Weekday
+  #check Weekday.sunday
+  #check Weekday.thursday
+  -- functions can take advantage of pattern matching
+  -- here is a function that maps 'Weekday' to a natural number
+  def natOfWeekday (d : Weekday) : Nat :=
+    match d with
+      | Weekday.sunday    => 1
+      | Weekday.monday    => 2
+      | Weekday.tuesday   => 3
+      | Weekday.wednesday => 4
+      | Weekday.thursday  => 5
+      | Weekday.friday    => 6
+      | Weekday.saturday  => 7
+  #check natOfWeekday
+  #eval natOfWeekday Weekday.thursday
+  /- note that instead of writing:
+      def natOfWeekday (d : Weekday) : Nat :=
+        match d with
+     lean allows us to write:
+      def natOfWeekday Weekday -> Nat
+  -/
 end declaring_new_types
 
 -- 2. Theorem Proving
@@ -285,22 +367,29 @@ namespace propositions_and_proofs
   def Implies (α : Prop) (β : Prop) : Prop := -- define Implies equivalent to implies
     α → β 
   #check Implies
-
+  -- an important principle in the dependant type theory of lean is that an object with a given type is seen as an instance of the proof of that type
+  -- the implications of this are profound, and it is the mechanism by which theorems can be interpreted 
+  -- while not covered here, it is important to understand dependant type theory for this (https://leanprover.github.io/lean4/doc/deptypes.html)
 end propositions_and_proofs
 
+-- 2.2 Tactics (https://leanprover.github.io/lean4/doc/tactics.html)
+namespace tactics
+  -- tactics are instructions that tell Lean how to construct a term or proof
+  -- here is an example of a tactic:
+  theorem tactic_ex : q ∨ p → p ∨ q := by
+    intro h
+    cases h with
+    | inl h_left =>
+      apply Or.inr
+      exact h_left
+    | inr h_right =>
+      apply Or.inl
+      assumption
+end tactics  
 
--- tactics
-theorem tactic_ex : q ∨ p → p ∨ q := by
-  intro h
-  cases h with
-  | inl h_left =>
-    apply Or.inr
-    exact h_left
-  | inr h_right =>
-    apply Or.inl
-    assumption
-  
+-- 3. The Main Function
 
+-- more of a footnote really, but here is an example of a main function:
 def main : IO Unit := -- main function, entry point of the program
   let str := "hello world from lean!"
   --IO.println "hello world from lean!"
