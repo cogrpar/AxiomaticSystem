@@ -7,7 +7,7 @@ lean package for working with axiomatic formal systems in the lean theorem prove
   - stores list of axioms `(ax₁ : prop₁), (ax₂ : prop₂), ... (axₙ : propₙ)`
   - can be used in theorem proving as proof of expression `α` where `α` is an instance of one of the axiomatic assumptions in AxiomaticSystem `β` 
   - eg. 
-    ```len
+    ```Lean
     theorem example : χ := -- where 'β' is an AxiomaticSystem in which one of the axioms is of type 'χ' 
           α : χ := β -- the reference to AxiomaticSystem 'β' would automatically return the axiom of type 'χ'
     ```
