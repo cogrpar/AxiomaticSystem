@@ -4,7 +4,7 @@ lean package for working with axiomatic formal systems in the lean theorem prove
 
 ### ROAD MAP:
 - [ ] **AxiomaticSystem Phase 1**
-  - stores list of axioms `(ax₁ : prop₁), (ax₂ : prop₂), ... (axₙ : propₙ)`
+  - stores list of Props taken from the types of axioms `(ax₁ : prop₁), (ax₂ : prop₂), ... (axₙ : propₙ)`
   - can be used in theorem proving as proof of expression `α` where `α` is an instance of one of the axiomatic assumptions in AxiomaticSystem `β` 
   - eg. 
     ```Lean
