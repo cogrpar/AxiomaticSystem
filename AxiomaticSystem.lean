@@ -22,5 +22,33 @@ namespace AxiomaticSystem
       | axiomaticSystem.init element, _                                 => element -- for a single element axiomaticSystem, return the element regardless of passed index
       | axiomaticSystem.inst first_element rest_of_list, 0              => first_element -- if the index is 0 for a multi element axiomaticSystem, return the first element
       | axiomaticSystem.inst first_element rest_of_list, Nat.succ index => get rest_of_list index -- if the index is greater than 0, call the get function on the rest of the list, subtracting 1 from the index
+
+    notation:max "def_from_axioms" name ":" type ":=" axSystem =>
+      try
+        let Axiom : get axSystem (length axSystem - 1)
+        | _ => let name : type := Axiom; 
+        getUnsolvedGoals
+      catch ex =>
+       if length axSystem > 0 then
+         def_from_axioms name : type := pop axSystem
+       else
+         throw ex
+      
   end axiomaticSystem
+
+  
 end AxiomaticSystem
+
+
+def equality (a : String) (b : String) : Bool :=
+  if Eq a b then
+    true
+  else 
+    false
+
+#check Eq
+
+axiom t : 1=1
+theorem test : 1=1 := 
+ let s := t
+ s
