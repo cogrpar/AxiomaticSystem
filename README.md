@@ -3,13 +3,13 @@
 lean package for working with axiomatic formal systems in the lean theorem prover
 
 ### ROAD MAP:
-- [ ] **AxiomaticSystem Phase 1**
+- [x] **AxiomaticSystem Phase 1**
   - stores list of Props taken from the types of axioms `(ax₁ : prop₁), (ax₂ : prop₂), ... (axₙ : propₙ)`
-  - can be used in theorem proving as proof of expression `α` where `α` is an instance of one of the axiomatic assumptions in AxiomaticSystem `β` 
+  - can be used in theorem proving as proof of expression `χ` where `χ` is an instance of one of the axiomatic assumptions in AxiomaticSystem `β` 
   - eg. 
     ```Lean
     theorem example : χ := -- where 'β' is an AxiomaticSystem in which one of the axioms is of type 'χ' 
-          α : χ := β -- the reference to AxiomaticSystem 'β' would automatically return the axiom of type 'χ'
+          reference_axiom i from β : χ -- the reference to AxiomaticSystem 'β' references the axiom of type 'χ', which must be specified to be stored at index i
     ```
 - [ ] **AxiomaticSystem Phase 2**
   - create a function that can deduce pseudo-random theorems from axiomatic systems, generating a new AxiomaticSystem that includes the theorem as a redundant axiom 

@@ -1,1 +1,3 @@
 /build
+/.vscode
+/foreign_deps/bin
