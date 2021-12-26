@@ -11,11 +11,17 @@ namespace dep
   -- axiomaticSystem type
   -- stores list of Prop taken from the types of axioms
   inductive axiomaticSystem where
-    | init (first_element : Prop) : axiomaticSystem
-    | inst (first_element : Prop) (rest_of_list : axiomaticSystem) : axiomaticSystem
+    | init {sentence : Prop} (first_element : sentence) : axiomaticSystem
+    | inst {sentence : Prop} (first_element : sentence) (rest_of_list : axiomaticSystem) : axiomaticSystem
 
   -- defining new notation for more easily constructing axiomaticSystems
-  notation:min arg "endAx"     => axiomaticSystem.init (getSentence arg)
-  notation:min arg1 "..." arg2 => axiomaticSystem.inst (getSentence arg1) arg2
+  notation:min arg "endAx"     => axiomaticSystem.init arg
+  notation:min arg1 "..." arg2 => axiomaticSystem.inst arg1 arg2
 
 end dep
+
+open dep
+axiom ax₁ : 1=1
+axiom ax₂ : 2=2
+
+def test : axiomaticSystem := ax₁ ... ax₂ endAx

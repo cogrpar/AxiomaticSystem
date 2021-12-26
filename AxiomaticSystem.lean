@@ -1,6 +1,8 @@
 import AxiomaticSystem.dep
 open dep -- open the additional dependencies used in this package
 
+-- ABI functions
+
 namespace AxiomaticSystem
   namespace axiomaticSystem
     def push {sentence : Prop} : axiomaticSystem → (Axiom : sentence) → axiomaticSystem -- function to push new axiom to the end of the axiomaticSystem stack
@@ -18,37 +20,32 @@ namespace AxiomaticSystem
       | axiomaticSystem.init _ => 1
       | axiomaticSystem.inst first_element rest_of_list => 1+(length rest_of_list)
 
-    def get : axiomaticSystem → Nat → Prop -- function that takes an index and returns the Prop stored at that index in the list
-      | axiomaticSystem.init element, _                                 => element -- for a single element axiomaticSystem, return the element regardless of passed index
-      | axiomaticSystem.inst first_element rest_of_list, 0              => first_element -- if the index is 0 for a multi element axiomaticSystem, return the first element
-      | axiomaticSystem.inst first_element rest_of_list, Nat.succ index => get rest_of_list index -- if the index is greater than 0, call the get function on the rest of the list, subtracting 1 from the index
-
-    notation:max "def_from_axioms" name ":" type ":=" axSystem =>
-      try
-        let Axiom : get axSystem (length axSystem - 1)
-        | _ => let name : type := Axiom; 
-        getUnsolvedGoals
-      catch ex =>
-       if length axSystem > 0 then
-         def_from_axioms name : type := pop axSystem
-       else
-         throw ex
+    -- private function that returns the type of an axiom stored at a given index in the axiomatic system (Prop)
+    private def _get_sentence_from_index : axiomaticSystem → Nat → Prop
+      | axiomaticSystem.init element, _                             => getSentence element
+      | axiomaticSystem.inst first_element rest_of_list, 0          => getSentence first_element
+      | axiomaticSystem.inst first_element rest_of_list, Nat.succ i => (_get_sentence_from_index (rest_of_list) i)
+    -- private axiom that re-expresses the axiom stored at a given index in the axiomatic system
+    private axiom _get_element_from_index (ax : axiomaticSystem) (index : Nat) (sentence : Prop := _get_sentence_from_index ax index) : sentence
+    -- define notation to easily reference an axiom from the axiomatic system in an expression
+    set_option quotPrecheck false
+    notation:min "reference_axiom" index "from" axSystem ":" type =>
+      let ax : type := _get_element_from_index axSystem index;
+      ax
       
   end axiomaticSystem
-
-  
 end AxiomaticSystem
 
+open AxiomaticSystem
 
-def equality (a : String) (b : String) : Bool :=
-  if Eq a b then
-    true
-  else 
-    false
+axiom a : 1=1
+axiom b : 2=2
+def ax : axiomaticSystem := a ... b endAx
 
-#check Eq
+#check AxiomaticSystem.axiomaticSystem._get_element_from_index ax 0
 
-axiom t : 1=1
-theorem test : 1=1 := 
- let s := t
- s
+theorem t : 1=1 :=
+  reference_axiom 0 from ax : 1=1
+
+theorem t2 : 2=2 :=
+  reference_axiom 1 from ax : 2=2
