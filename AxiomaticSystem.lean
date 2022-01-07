@@ -35,17 +35,3 @@ namespace AxiomaticSystem
       
   end axiomaticSystem
 end AxiomaticSystem
-
-open AxiomaticSystem
-
-axiom a : 1=1
-axiom b : 2=2
-def ax : axiomaticSystem := a ... b endAx
-
-#check AxiomaticSystem.axiomaticSystem._get_element_from_index ax 0
-
-theorem t : 1=1 :=
-  reference_axiom 0 from ax : 1=1
-
-theorem t2 : 2=2 :=
-  reference_axiom 1 from ax : 2=2
