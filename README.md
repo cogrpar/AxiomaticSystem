@@ -11,5 +11,5 @@ lean package for working with axiomatic formal systems in the lean theorem prove
     theorem example : χ := -- where 'β' is an AxiomaticSystem in which one of the axioms is of type 'χ' 
           reference_axiom i from β : χ -- the reference to AxiomaticSystem 'β' references the axiom of type 'χ', which must be specified to be stored at index i
 
-- [x] **AxiomaticSystem Phase 2*
+- [ ] **AxiomaticSystem Phase 2**
   - explore automated theorem proving by configuring OpenAI Codex to utilize AxiomaticSystem
